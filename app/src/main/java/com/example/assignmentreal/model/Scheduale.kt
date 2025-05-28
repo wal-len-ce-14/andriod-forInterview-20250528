@@ -10,17 +10,19 @@ import okhttp3.Response
 import okhttp3.Call
 import okhttp3.Callback
 import okio.IOException
+import kotlin.collections.List
 
-data class Slot(val start: String, val end: String)
+data class Slot(val start: String, val end: String, val tag: String? = null)
 
 class Schedule {
     var available: List<Slot> = listOf()
     var booked: List<Slot> = listOf()
 }
 
+
 fun fetchScheduale(
     url: String,
-    onResult: (Schedule?) -> Unit
+    onResult: (List<Slot>?) -> Unit
 ){
     val client = OkHttpClient()
     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
@@ -37,7 +39,19 @@ fun fetchScheduale(
         override fun onResponse(call: Call, response: Response) {
 
             val json = response.body?.string()
-            val schedule = json?.let { adapter.fromJson(it) }
+            val _schedule = json?.let {
+                adapter.fromJson(it)
+            }
+            var schedule: MutableList<Slot> = mutableListOf()
+            _schedule?.available?.let{ slots ->
+                val updatedSlots = slots.map { it.copy(tag = "available") }
+                schedule.addAll(updatedSlots)
+            }
+            _schedule?.booked?.let{ slots ->
+                val updatedSlots = slots.map { it.copy(tag = "booked") }
+                schedule.addAll(updatedSlots)
+            }
+
             Log.d("Schedule", "Fetched: $schedule")
             onResult(schedule)
         }

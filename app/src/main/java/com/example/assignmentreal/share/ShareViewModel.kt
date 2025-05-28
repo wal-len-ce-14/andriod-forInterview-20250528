@@ -4,11 +4,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.example.assignmentreal.model.Schedule
+import com.example.assignmentreal.model.Slot
 import com.example.assignmentreal.model.fetchScheduale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
+import kotlin.collections.listOf
+import kotlin.collections.sortedBy
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ShareViewModel: ViewModel() {
@@ -22,8 +25,8 @@ class ShareViewModel: ViewModel() {
     private val _weekDay = MutableStateFlow(1)
     val weekDay: StateFlow<Int> = _weekDay.asStateFlow()
 
-    private val _schedule = MutableStateFlow(Schedule())
-    val schedule: StateFlow<Schedule> = _schedule.asStateFlow()
+    private val _schedule = MutableStateFlow<List<Slot>>(emptyList())
+    val schedule: StateFlow<List<Slot>> = _schedule.asStateFlow()
 
     fun selectWeekDay(day: Int){
         _weekDay.value = day
@@ -35,6 +38,7 @@ class ShareViewModel: ViewModel() {
         fetchScheduale(url) { res ->
             if (res != null) {
                 _schedule.value = res
+                _schedule.value.sortedBy { it.start }
             }
         }
     }

@@ -32,14 +32,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun datePicker(viewModel: ShareViewModel = viewModel()){
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getNowWeek(baseSunday: LocalDate, weekLater: Number): Pair<LocalDate, LocalDate>{
-        val selectSunday = baseSunday.plusWeeks(weekLater.toLong())
-        val selectSaturday = selectSunday.plusDays(6)
-        viewModel.selectWeek(selectSunday)
-        return Pair<LocalDate, LocalDate>(selectSunday,selectSaturday)
-    }
-
     var weekLater by remember { mutableStateOf(0) }
 //    var weekDay by remember { mutableStateOf(1)}
 
@@ -48,7 +40,24 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
     val today = LocalDate.now()
     val dayOfWeek = today.dayOfWeek.value
     val baseSunday = today.minusDays(dayOfWeek.toLong() % 7)
-    val (sunday, saturday) = getNowWeek(baseSunday, weekLater)
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getNowWeek(baseSunday: LocalDate, weekLater: Number): Pair<LocalDate, LocalDate>{
+        val selectSunday = baseSunday.plusWeeks(weekLater.toLong())
+        val selectSaturday = selectSunday.plusDays(6)
+        viewModel.selectWeek(selectSunday)
+        return Pair<LocalDate, LocalDate>(selectSunday,selectSaturday)
+    }
+
+    val (sunday, saturday) = getNowWeek(
+        baseSunday,
+        weekLater
+    )
+    fun refreshSchedule(){
+        viewModel.loadSchedule(
+            "https://en.amazingtalker.com/v1/guest/teachers/jamie-coleman/schedule?started_at=${sunday}")
+    }
+
 
     Column {
         Row(
@@ -59,13 +68,13 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
         ){
             Button(
                 modifier = Modifier.padding(4.dp),
-                onClick = { if(weekLater-1>=0) weekLater -= 1; else weekLater  = 0  }) {
+                onClick = { if(weekLater-1>=0) weekLater -= 1; else weekLater  = 0 ; refreshSchedule() }) {
                 Text("<")
             }
             Text(text = "$sunday~$saturday")
             Button(
                 modifier = Modifier.padding(4.dp),
-                onClick = { weekLater    += 1 }
+                onClick = { weekLater += 1 ; refreshSchedule()}
             ) {
                 Text(">")
             }
@@ -78,7 +87,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
 
         ){
             Button(
-                onClick = { viewModel.selectWeekDay(1) },
+                onClick = { viewModel.selectWeekDay(1); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 1) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -87,7 +96,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Sunday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(2) },
+                onClick = { viewModel.selectWeekDay(2); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 2) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -96,7 +105,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Monday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(3) },
+                onClick = { viewModel.selectWeekDay(3); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 3) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -105,7 +114,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Tuesday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(4) },
+                onClick = { viewModel.selectWeekDay(4); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 4) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -114,7 +123,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Wednesday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(5) },
+                onClick = { viewModel.selectWeekDay(5); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 5) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -123,7 +132,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Thursday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(6) },
+                onClick = { viewModel.selectWeekDay(6); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 6) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -132,7 +141,7 @@ fun datePicker(viewModel: ShareViewModel = viewModel()){
                 Text(text = "Friday")
             }
             Button(
-                onClick = { viewModel.selectWeekDay(7) },
+                onClick = { viewModel.selectWeekDay(7); refreshSchedule() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 7) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
