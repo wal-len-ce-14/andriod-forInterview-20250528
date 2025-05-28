@@ -25,6 +25,7 @@ fun MainScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         datePicker()
+        bookChecker()
     }
 }
 

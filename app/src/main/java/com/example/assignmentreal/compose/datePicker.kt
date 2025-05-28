@@ -6,15 +6,13 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,15 +23,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.assignmentreal.share.ShareViewModel
 import com.example.assignmentreal.ui.theme.AssignmentRealTheme
 import java.time.LocalDate
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun datePicker(){
+fun datePicker(viewModel: ShareViewModel = viewModel()){
 
-    var weekLater  by remember { mutableStateOf(0) }
-    var weekDay by remember { mutableStateOf(1)}
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getNowWeek(baseSunday: LocalDate, weekLater: Number): Pair<LocalDate, LocalDate>{
+        val selectSunday = baseSunday.plusWeeks(weekLater.toLong())
+        val selectSaturday = selectSunday.plusDays(6)
+        viewModel.selectWeek(selectSunday)
+        return Pair<LocalDate, LocalDate>(selectSunday,selectSaturday)
+    }
+
+    var weekLater by remember { mutableStateOf(0) }
+//    var weekDay by remember { mutableStateOf(1)}
+
+    val weekDay by viewModel.weekDay.collectAsState()
 
     val today = LocalDate.now()
     val dayOfWeek = today.dayOfWeek.value
@@ -68,7 +78,7 @@ fun datePicker(){
 
         ){
             Button(
-                onClick = { weekDay = 1 },
+                onClick = { viewModel.selectWeekDay(1) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 1) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -77,7 +87,7 @@ fun datePicker(){
                 Text(text = "Sunday")
             }
             Button(
-                onClick = { weekDay = 2 },
+                onClick = { viewModel.selectWeekDay(2) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 2) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -86,7 +96,7 @@ fun datePicker(){
                 Text(text = "Monday")
             }
             Button(
-                onClick = { weekDay = 3 },
+                onClick = { viewModel.selectWeekDay(3) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 3) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -95,7 +105,7 @@ fun datePicker(){
                 Text(text = "Tuesday")
             }
             Button(
-                onClick = { weekDay = 4 },
+                onClick = { viewModel.selectWeekDay(4) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 4) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -104,7 +114,7 @@ fun datePicker(){
                 Text(text = "Wednesday")
             }
             Button(
-                onClick = { weekDay = 5 },
+                onClick = { viewModel.selectWeekDay(5) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 5) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -113,7 +123,7 @@ fun datePicker(){
                 Text(text = "Thursday")
             }
             Button(
-                onClick = { weekDay = 6 },
+                onClick = { viewModel.selectWeekDay(6) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 6) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -122,7 +132,7 @@ fun datePicker(){
                 Text(text = "Friday")
             }
             Button(
-                onClick = { weekDay = 7 },
+                onClick = { viewModel.selectWeekDay(7) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (weekDay == 7) Color(0xFF1976D2) else Color.LightGray,
                     contentColor = Color.White
@@ -130,9 +140,9 @@ fun datePicker(){
             ){
                 Text(text = "Saturday")
             }
-
         }
     }
+
 
 
 }
@@ -146,9 +156,3 @@ fun datePickerPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-private fun getNowWeek(baseSunday: LocalDate, weekLater: Number): Pair<LocalDate, LocalDate>{
-    val selectSunday = baseSunday.plusWeeks(weekLater.toLong())
-    val selectSaturday = selectSunday.plusDays(6)
-    return Pair<LocalDate, LocalDate>(selectSunday,selectSaturday)
-}
